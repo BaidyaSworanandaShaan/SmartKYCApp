@@ -1,0 +1,50 @@
+@import "../variable";
+// @import "~slick-carousel/slick/slick.css";
+// @import "~slick-carousel/slick/slick-theme.css";
+
+.signup {
+  &--content {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    justify-content: center;
+
+    .title {
+      font-size: 1.5rem;
+    }
+  }
+  &--banner {
+    background-color: $primary-color--dark;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    .title {
+      font-size: 1.4rem;
+    }
+    .sub-title {
+      font-size: 1rem;
+    }
+    .slider-item {
+      display: flex;
+      flex-direction: column; /* Arrange image and text in a column */
+      align-items: center;
+      color: $background-color;
+      .slider-image {
+        max-width: 100%;
+        height: auto;
+      }
+    }
+  }
+  .btn-primary {
+    background-color: $primary-color;
+    color: $background-color;
+    box-shadow: none;
+    padding: 10px 0;
+    &:hover {
+      background-color: $background-color;
+      color: $primary-color;
+      border: 1px solid $primary-color;
+    }
+  }
+}
