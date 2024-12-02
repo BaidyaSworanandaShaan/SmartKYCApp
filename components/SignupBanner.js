@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Button, Container, Grid } from "@mui/material";
+import { Button, Container, Grid,Box } from "@mui/material";
 import "./style.scss"; // Adjust the import path based on your styles
 import Link from "next/link";
 const SignupBanner = () => {
@@ -13,9 +13,14 @@ const SignupBanner = () => {
             Create an account and access cutting-edge tools to secure and
             streamline your verification needs!
           </p>
-          <Link href="/signup">
-            <Button className="btn btn-secondary">Sign Up Now</Button>
-          </Link>
+          <Box sx={{ marginTop: 3, display: "flex", gap: "10px" }}>
+            <Link href="/signup">
+              <Button className="btn btn-secondary">Sign Up Now</Button>
+            </Link>
+            <Link href="/login">
+              <Button className="btn-secondary">Log In</Button>
+            </Link>
+          </Box>
         </Grid>
         <Grid item md={4} xs={12}>
           {/* <img src={dashboardImg} alt="Dashboard" className="dashboard-image" /> */}
