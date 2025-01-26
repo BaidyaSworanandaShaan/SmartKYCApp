@@ -1,5 +1,4 @@
 import "./globals.css";
-import "@fontsource/montserrat";
 
 export const metadata = {
   title: "Create Next App",
