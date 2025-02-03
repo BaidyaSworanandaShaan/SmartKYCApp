@@ -38,7 +38,7 @@ const HeroSection = () => {
               <Button
                 variant="contained"
                 color="primary"
-                href="#"
+                href="/signin"
                 className="btn-primary"
               >
                 Get Started

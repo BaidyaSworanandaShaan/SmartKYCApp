@@ -2,19 +2,19 @@
 import { useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
 import * as faceapi from "face-api.js";
-import Tesseract from "tesseract.js"; // Import Tesseract.js
+import Tesseract from "tesseract.js";
 import {
   Container,
   Box,
   Typography,
   Button,
   CircularProgress,
+  Alert,
 } from "@mui/material";
 import Image from "next/image";
 
 const FacialRecognition = () => {
-  const [cookies] = useCookies(["uploadedFiles"]); // Access uploaded files from cookies
-
+  const [cookies] = useCookies(["uploadedFiles"]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [matchStatus, setMatchStatus] = useState(null);
   const [extractedInfo, setExtractedInfo] = useState(null);
@@ -129,15 +129,16 @@ const FacialRecognition = () => {
       console.log("Cleaned Text:", cleanText);
 
       // Define regex patterns
+
       const patterns = {
         certificateNo: /Citizenship\s*Certificate\s*No\s*[:\-]?\s*([\d\-]+)/i,
-        fullName: /Full\s*Name\s*[:.\-]?\s*([A-Z\s]+)(?=\s*Date\s*of\s*Birth)/i,
-
-        dob: /Date\s*of\s*Birth.*?Year[:\-]?\s*(\d{4})\s*Month[:\-]?\s*([A-Z]+)\s*Day[:\-]?\s*(\d{1,2})/i,
+        fullName:
+          /Full\s*Name\s*[:.\-]?\s*([A-Za-z\s]+)(?=\s*Date\s*of\s*Birth)/i,
+        dob: /Date\s*of\s*Birth\s*[:\-]?\s*(\d{4})\s*Month\s*[:\-]?\s*([A-Za-z]+)\s*Day\s*[:\-]?\s*(\d{1,2})/i,
         birthPlace:
-          /Birth\s*Place.*?District[:\-]?\s*([A-Za-z\s]+?)\s*Metropolitan\s*[:\-]?\s*([A-Za-z\s]+)/i,
+          /Birth\s*Place\s*[:\-]?\s*District\s*[:\-]?\s*([A-Za-z\s]+)\s*Metropolitan\s*[:\-]?\s*([A-Za-z\s]+)/i,
         permanentAddress:
-          /Permanent\s*Address.*?District[:\-]?\s*([A-Za-z\s]+?)\s*Metropolitan\s*[:\-]?\s*([A-Za-z\s]+)/i,
+          /Permanent\s*Address\s*[:\-]?\s*District\s*[:\-]?\s*([A-Za-z\s]+)\s*Metropolitan\s*[:\-]?\s*([A-Za-z\s]+)/i,
       };
 
       // Extract data using regex
@@ -179,35 +180,40 @@ const FacialRecognition = () => {
 
   return (
     <Container maxWidth="md">
-      <Box mt={4}>
-        <Typography variant="h5">Facial Recognition</Typography>
-        <Typography variant="body1" mt={2}>
-          Compare your live face with the uploaded document and extract details.
+      <Box mt={4} sx={{ textAlign: "center" }}>
+        <Typography variant="h4" gutterBottom>
+          Facial Recognition and Document Verification
+        </Typography>
+        <Typography variant="body1" color="textSecondary" mb={4}>
+          Compare your live face with the uploaded document and extract personal
+          information.
         </Typography>
 
         {cookies.uploadedFiles && cookies.uploadedFiles.length > 0 && (
-          <Box mt={4}>
-            <Typography variant="h6">Document:</Typography>
-            <Image
-              src={cookies.uploadedFiles[0]}
-              alt="Document"
-              width={150}
-              height={150}
-              style={{
-                borderRadius: "8px",
-                boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-              }}
-            />
+          <Box mb={4} sx={{ display: "flex", justifyContent: "center" }}>
+            <Box sx={{ textAlign: "center" }}>
+              <Typography variant="h6">Uploaded Document</Typography>
+              <Image
+                src={cookies.uploadedFiles[0]}
+                alt="Uploaded Document"
+                width={200}
+                height={200}
+                style={{
+                  borderRadius: "10px",
+                  boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+                }}
+              />
+            </Box>
           </Box>
         )}
 
-        <Box mt={4}>
+        <Box mb={4}>
           <Button variant="contained" onClick={startWebcam}>
             Start Webcam
           </Button>
         </Box>
 
-        <Box mt={4} position="relative">
+        <Box mb={4} sx={{ position: "relative" }}>
           <video ref={videoRef} width="100%" autoPlay muted />
           <canvas
             ref={canvasRef}
@@ -215,7 +221,7 @@ const FacialRecognition = () => {
           />
         </Box>
 
-        <Box mt={4}>
+        <Box mb={4}>
           <Button
             variant="contained"
             color="secondary"
@@ -227,10 +233,11 @@ const FacialRecognition = () => {
         </Box>
 
         {matchStatus && (
-          <Box mt={4}>
+          <Box mb={4}>
             <Typography
               variant="h6"
               color={matchStatus === "Matched" ? "success.main" : "error.main"}
+              sx={{ fontWeight: "bold", fontSize: "1.2rem" }}
             >
               {matchStatus}
             </Typography>
@@ -238,20 +245,30 @@ const FacialRecognition = () => {
         )}
 
         {extractedInfo && (
-          <Box mt={4}>
+          <Box mb={4}>
             <Typography variant="h6">Extracted Information:</Typography>
-            <Typography>
-              Certificate No: {extractedInfo.certificateNo}
-            </Typography>
-            <Typography>Full Name: {extractedInfo.fullName}</Typography>
-            <Typography>
-              Date of Birth: {extractedInfo?.dob?.year}-
-              {extractedInfo.dob.month}-{extractedInfo.dob.day}
-            </Typography>
-            <Typography>
-              Birth Place: {extractedInfo.birthPlace.district},{" "}
-              {extractedInfo.birthPlace.metropolitan}
-            </Typography>
+            {extractedInfo.error ? (
+              <Alert severity="error">{extractedInfo.error}</Alert>
+            ) : (
+              <>
+                <Typography>
+                  Certificate No: {extractedInfo.certificateNo}
+                </Typography>
+                <Typography>Full Name: {extractedInfo.fullName}</Typography>
+                <Typography>
+                  Date of Birth: {extractedInfo.dob.year}-
+                  {extractedInfo.dob.month}-{extractedInfo.dob.day}
+                </Typography>
+                <Typography>
+                  Birth Place: {extractedInfo.birthPlace.district},{" "}
+                  {extractedInfo.birthPlace.metropolitan}
+                </Typography>
+                <Typography>
+                  Permanent Address: {extractedInfo.permanentAddress.district},{" "}
+                  {extractedInfo.permanentAddress.metropolitan}
+                </Typography>
+              </>
+            )}
           </Box>
         )}
       </Box>

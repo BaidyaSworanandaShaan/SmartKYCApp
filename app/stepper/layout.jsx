@@ -72,7 +72,7 @@ export default function HorizontalLinearStepper() {
 
   return (
     <Container maxWidth="lg">
-      <Box sx={{ width: "100%", margin: "20px 0" }}>
+      <Box sx={{ width: "100%", margin: "100px 0" }}>
         <Stepper activeStep={activeStep} className="stepper-header">
           {steps.map((step, index) => (
             <Step key={step.label}>
