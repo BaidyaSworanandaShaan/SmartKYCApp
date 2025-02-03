@@ -186,3 +186,30 @@
     }
   }
 }
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 20px 0;
+  background-color: #fff;
+  color: $primary-color;
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Soft shadow at the bottom */
+  z-index: 1000;
+}
+.navbar-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navbar-title {
+  font-weight: bold;
+}
+
+.navbar-buttons {
+  display: flex;
+  gap: 10px;
+}

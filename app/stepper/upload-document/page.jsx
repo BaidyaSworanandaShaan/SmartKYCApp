@@ -1,7 +1,13 @@
 "use client";
 
 import StepperHeader from "@/components/StepperHeader";
-import { Container, Box, Button, Typography } from "@mui/material";
+import {
+  Container,
+  Box,
+  Button,
+  Typography,
+  CircularProgress,
+} from "@mui/material";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
@@ -106,8 +112,12 @@ const UploadDocument = () => {
           maxAge: 3600, // 1 hour
         });
       } else {
-        alert("No face detected in the front image.");
+        alert(
+          "Image can't be found in the citizenship card. No face detected."
+        );
         console.error("Face detection failed.");
+        setIsProcessing(false);
+        return;
       }
 
       // Extract text from the second image (back side)
@@ -157,22 +167,49 @@ const UploadDocument = () => {
           multiple
           onChange={handleFileChange}
           disabled={files.length >= 2 || isProcessing}
+          accept="image/*"
+          style={{ display: "none" }}
+          id="file-upload"
         />
+        <label htmlFor="file-upload">
+          <Button
+            className="btn-primary"
+            variant="contained"
+            color="primary"
+            component="span"
+            fullWidth
+            sx={{ mb: 2 }}
+          >
+            {files.length === 0
+              ? "Choose Documents to Upload"
+              : "+ Add More Documents"}
+          </Button>
+        </label>
+
         {files.length > 0 && (
-          <Box mt={2} sx={{ display: "flex", gap: "25px" }}>
+          <Box
+            mt={2}
+            sx={{ display: "flex", flexDirection: "column", gap: "15px" }}
+          >
             {files.map((file, index) => (
-              <Box key={index} display="flex" alignItems="center" mt={1}>
-                <Image
-                  src={file}
-                  alt={`Uploaded ${index + 1}`}
-                  width={100}
-                  height={100}
-                  style={{ marginRight: "10px" }}
-                />
+              <Box
+                key={index}
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+                sx={{ border: "1px solid #ddd", padding: 1, borderRadius: 1 }}
+              >
+                <Typography
+                  variant="body2"
+                  sx={{ overflow: "hidden", textOverflow: "ellipsis" }}
+                >
+                  {index === 0 ? "Citizenship Front" : "Citizenship Back"}
+                </Typography>
                 <Button
                   onClick={() => handleClearFile(index)}
                   variant="outlined"
                   color="error"
+                  size="small"
                   disabled={isProcessing}
                 >
                   Remove
@@ -181,15 +218,28 @@ const UploadDocument = () => {
             ))}
           </Box>
         )}
+
         {files.length === 2 && !isProcessing && (
           <Typography variant="body1" color="success.main" mt={2}>
             Documents are being processed automatically.
           </Typography>
         )}
+
+        {isProcessing && (
+          <Box sx={{ textAlign: "center", mt: 3 }}>
+            <CircularProgress />
+            <Typography variant="body1" color="textSecondary" sx={{ mt: 2 }}>
+              Processing your documents. Please wait...
+            </Typography>
+          </Box>
+        )}
       </Box>
+
       {photo && (
-        <Box mt={4}>
-          <Typography variant="h6">Extracted Photo:</Typography>
+        <Box mt={4} sx={{ textAlign: "center" }}>
+          <Typography variant="h6" mb={2}>
+            Extracted Photo:
+          </Typography>
           <Image
             src={photo}
             alt="Detected Face"
@@ -199,6 +249,7 @@ const UploadDocument = () => {
           />
         </Box>
       )}
+
       {textInfo && (
         <Box mt={4}>
           <Typography variant="h6">Extracted Text:</Typography>

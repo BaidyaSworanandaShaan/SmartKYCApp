@@ -1,22 +1,26 @@
 import Features from "@/components/Features";
 import HeroSection from "@/components/HeroSection";
+import Navbar from "@/components/Navbar";
 import RegisterSteps from "@/components/RegisterSteps";
 import SignupBanner from "@/components/SignupBanner";
 import { Container } from "@mui/material";
-import Image from "next/image";
 
 export default function Home() {
   return (
     <main>
       <HeroSection />
+
       <Container maxWidth="lg">
-        <Container maxWidth="lg">
-          <Features
-            subTitle={<>Features</>}
-            title={<>Explore Our Cutting-Edge Features</>}
-          />
-        </Container>
+        {/* Explore cutting-edge features section */}
+        <Features
+          subTitle="Features"
+          title="Explore Our Cutting-Edge Features"
+        />
+
+        {/* Registration steps */}
         <RegisterSteps />
+
+        {/* Signup banner */}
         <SignupBanner />
       </Container>
     </main>
