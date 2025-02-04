@@ -1,9 +1,14 @@
 import React from "react";
 
-import { Button, Container, Grid } from "@mui/material";
+import { Button, Grid } from "@mui/material";
 import "./style.scss"; // Adjust the import path based on your styles
 import Link from "next/link";
+import dashboards from "../assets/images/dashboards.png";
+
 const SignupBanner = () => {
+  console.log(dashboards,'dddd')
+
+
   return (
     <div className="signup-banner">
       <Grid container spacing={2}>
@@ -18,7 +23,7 @@ const SignupBanner = () => {
           </Link>
         </Grid>
         <Grid item md={4} xs={12}>
-          {/* <img src={dashboardImg} alt="Dashboard" className="dashboard-image" /> */}
+          <img src={dashboards} alt="Dashboard" className="dashboard-image" />
         </Grid>
       </Grid>
     </div>

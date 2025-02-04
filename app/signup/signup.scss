@@ -14,7 +14,7 @@
     }
   }
   &--banner {
-    background-color: $primary-color--dark;
+    background: linear-gradient( 0deg, #2e2c98 0%, #011a62 100%);
     display: flex;
     flex-direction: column;
     justify-content: center;
