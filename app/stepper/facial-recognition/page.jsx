@@ -14,7 +14,7 @@ import {
 import Image from "next/image";
 
 const FacialRecognition = () => {
-  const [cookies] = useCookies(["uploadedFiles"]);
+  const [cookies, setCookie] = useCookies(["uploadedFiles", "extractedInfo"]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [matchStatus, setMatchStatus] = useState(null);
   const [extractedInfo, setExtractedInfo] = useState(null);
@@ -120,56 +120,65 @@ const FacialRecognition = () => {
 
       console.log("Extracted Text:\n", extractedText);
 
-      // Clean the text
+      // Clean the text by removing unwanted characters and whitespace
       const cleanText = extractedText
-        .replace(/[^A-Za-z0-9\s:.-]/g, " ") // Remove non-alphanumeric characters
-        .replace(/\s+/g, " ") // Replace multiple spaces with one
-        .trim(); // Trim extra spaces at the start/end
+        .replace(/[^A-Za-z0-9\s:.,-]/g, " ") // Keep commas and hyphens for address parsing
+        .replace(/\s+/g, " ") // Remove extra spaces
+        .trim(); // Trim leading/trailing spaces
 
       console.log("Cleaned Text:", cleanText);
 
-      // Define regex patterns
-
+      // Regex patterns to extract data
       const patterns = {
-        certificateNo: /Citizenship\s*Certificate\s*No\s*[:\-]?\s*([\d\-]+)/i,
+        citizenshipNumber: /\b\d{2}-\d{2}-\d{2}-\d{5}\b/,
         fullName:
-          /Full\s*Name\s*[:.\-]?\s*([A-Za-z\s]+)(?=\s*Date\s*of\s*Birth)/i,
-        dob: /Date\s*of\s*Birth\s*[:\-]?\s*(\d{4})\s*Month\s*[:\-]?\s*([A-Za-z]+)\s*Day\s*[:\-]?\s*(\d{1,2})/i,
-        birthPlace:
-          /Birth\s*Place\s*[:\-]?\s*District\s*[:\-]?\s*([A-Za-z\s]+)\s*Metropolitan\s*[:\-]?\s*([A-Za-z\s]+)/i,
-        permanentAddress:
-          /Permanent\s*Address\s*[:\-]?\s*District\s*[:\-]?\s*([A-Za-z\s]+)\s*Metropolitan\s*[:\-]?\s*([A-Za-z\s]+)/i,
+          /Full\s*Name\s*[:\.\s]*([A-Z\s]+)(?=\s*(Date\s*of\s*Birth|$))/i, // Full Name
+
+        wardNumber: /Ward\s*Ne\.?\s*[:\s]*(\d{1,2})/i,
+        sex: /Sex:\s*(Male|Female)/,
+        dobYear: /Year:\s*(\d{4})/,
+        dobMonth: /Month:\s*(\w{3})/,
+        dobDay: /Day:\s*(\d{1,2})/,
+        birthPlace: /Birth Place:\s*District:\s*([A-Za-z\s]+)/,
+        permanentAddress: /Permanent Address:\s*District:\s*([A-Za-z\s]+)/,
       };
 
-      // Extract data using regex
+      // Extracting data using regex
       const extractedInfo = {
-        certificateNo:
-          cleanText.match(patterns.certificateNo)?.[1] || "Not Found",
-        fullName:
-          cleanText.match(patterns.fullName)?.[1]?.trim() || "Not Found",
+        citizenshipNumber: cleanText.match(patterns.citizenshipNumber)
+          ? cleanText.match(patterns.citizenshipNumber)[0]
+          : "Not Available",
+        fullName: cleanText.match(patterns.fullName)
+          ? cleanText.match(patterns.fullName)[1]
+          : "Not Available",
+        sex: cleanText.match(patterns.sex)
+          ? cleanText.match(patterns.sex)[1]
+          : "Not Available",
         dob: {
-          year: cleanText.match(patterns.dob)?.[1] || "Not Found",
-          month: cleanText.match(patterns.dob)?.[2] || "Not Found",
-          day: cleanText.match(patterns.dob)?.[3] || "Not Found",
+          year: cleanText.match(patterns.dobYear)
+            ? cleanText.match(patterns.dobYear)[1]
+            : "Not Available",
+          month: cleanText.match(patterns.dobMonth)
+            ? cleanText.match(patterns.dobMonth)[1]
+            : "Not Available",
+          day: cleanText.match(patterns.dobDay)
+            ? cleanText.match(patterns.dobDay)[1]
+            : "Not Available",
         },
-        birthPlace: {
-          district:
-            cleanText.match(patterns.birthPlace)?.[1]?.trim() || "Not Found",
-          metropolitan:
-            cleanText.match(patterns.birthPlace)?.[2]?.trim() || "Not Found",
-        },
-        permanentAddress: {
-          district:
-            cleanText.match(patterns.permanentAddress)?.[1]?.trim() ||
-            "Not Found",
-          metropolitan:
-            cleanText.match(patterns.permanentAddress)?.[2]?.trim() ||
-            "Not Found",
-        },
+        wardNumber: cleanText.match(patterns.wardNumber)
+          ? cleanText.match(patterns.wardNumber)[1]
+          : "Not Available",
+        birthPlace: cleanText.match(patterns.birthPlace)
+          ? cleanText.match(patterns.birthPlace)[1]
+          : "Not Available",
+        permanentAddress: cleanText.match(patterns.permanentAddress)
+          ? cleanText.match(patterns.permanentAddress)[1]
+          : "Not Available",
       };
       console.log("Extracted Data:", extractedInfo);
 
       setExtractedInfo(extractedInfo);
+      setCookie("extractedInfo", extractedInfo, { path: "/" });
       return extractedInfo;
     } catch (error) {
       console.error("OCR Failed:", error);
@@ -213,11 +222,20 @@ const FacialRecognition = () => {
           </Button>
         </Box>
 
-        <Box mb={4} sx={{ position: "relative" }}>
-          <video ref={videoRef} width="100%" autoPlay muted />
+        <Box
+          mb={4}
+          sx={{ position: "relative", width: "100%", height: "auto" }}
+        >
+          <video ref={videoRef} width="100%" height="auto" autoPlay muted />
           <canvas
             ref={canvasRef}
-            style={{ position: "absolute", top: 0, left: 0 }}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "auto",
+            }}
           />
         </Box>
 
@@ -252,21 +270,18 @@ const FacialRecognition = () => {
             ) : (
               <>
                 <Typography>
-                  Certificate No: {extractedInfo.certificateNo}
+                  Certificate No: {extractedInfo.citizenshipNumber}
                 </Typography>
                 <Typography>Full Name: {extractedInfo.fullName}</Typography>
                 <Typography>
                   Date of Birth: {extractedInfo.dob.year}-
                   {extractedInfo.dob.month}-{extractedInfo.dob.day}
                 </Typography>
+                <Typography>Birth Place: {extractedInfo.birthPlace}</Typography>
                 <Typography>
-                  Birth Place: {extractedInfo.birthPlace.district},{" "}
-                  {extractedInfo.birthPlace.metropolitan}
+                  Permanent Address: {extractedInfo.permanentAddress}
                 </Typography>
-                <Typography>
-                  Permanent Address: {extractedInfo.permanentAddress.district},{" "}
-                  {extractedInfo.permanentAddress.metropolitan}
-                </Typography>
+                <Typography>Ward Number: {extractedInfo.wardNumber}</Typography>
               </>
             )}
           </Box>
