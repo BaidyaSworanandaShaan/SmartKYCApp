@@ -136,11 +136,11 @@ const DocumentVerification = () => {
           />
         </Grid>
       </Grid>
-      <Box sx={{ mt: 2 }}>
+      {/* <Box sx={{ mt: 2 }}>
         <Button variant="contained" color="primary" onClick={handleSave}>
           Save
         </Button>
-      </Box>
+      </Box> */}
     </div>
   );
 };

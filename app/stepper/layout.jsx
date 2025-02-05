@@ -100,7 +100,7 @@ export default function HorizontalLinearStepper() {
               }}
             >
               <Button
-                className="btn-primary"
+            
                 color="inherit"
                 disabled={activeStep === 0}
                 onClick={handleBack}

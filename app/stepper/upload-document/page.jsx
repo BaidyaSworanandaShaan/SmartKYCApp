@@ -250,14 +250,14 @@ const UploadDocument = () => {
         </Box>
       )}
 
-      {textInfo && (
+      {/* {textInfo && (
         <Box mt={4}>
           <Typography variant="h6">Extracted Text:</Typography>
           <pre style={{ whiteSpace: "pre-wrap", wordWrap: "break-word" }}>
             {textInfo}
           </pre>
         </Box>
-      )}
+      )} */}
     </Container>
   );
 };

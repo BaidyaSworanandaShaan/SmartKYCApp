@@ -7,5 +7,5 @@ export default withAuth({
 });
 
 export const config = {
-  matcher: ["/dashboard", "/stepper"], // Correct syntax
+  matcher: ["/dashboard"], // Correct syntax
 };
