@@ -157,11 +157,12 @@ const SignIn = () => {
                         color="primary"
                         fullWidth
                         type="submit"
+                        className="btn-primary"
                       >
                         Sign In
                       </Button>
                     </Grid>
-                    <Grid item xs={12} style={{ textAlign: "center" }}>
+                    <Grid item xs={12} >
                       <Typography variant="body2">
                         Don't have an account?{" "}
                         <Link
@@ -181,11 +182,11 @@ const SignIn = () => {
 
         {/* Banner Section */}
         <Grid item xs={6} className="signin--banner">
-          <div className="slider-item">
+          {/* <div className="slider-item">
             <h2>What's new?</h2>
             <h3>Pi Network's KYC Verification Deadline</h3>
             <p>Pi Network, a cryptocurrency platform, set a final KYC verification deadline for January 31, 2025, ahead of its planned mainnet launch in March. Users who do not complete the KYC process risk forfeiting most of their Pi holdings, as the platform aims to maintain network integrity and eliminate fraudulent accounts.</p>
-          </div>
+          </div> */}
         </Grid>
       </Grid>
 

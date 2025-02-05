@@ -4,6 +4,7 @@ import { Button, Grid } from "@mui/material";
 import "./style.scss"; // Adjust the import path based on your styles
 import Link from "next/link";
 import dashboards from "../assets/images/dashboards.png";
+import Image from "next/image";
 
 const SignupBanner = () => {
   console.log(dashboards,'dddd')
@@ -23,7 +24,7 @@ const SignupBanner = () => {
           </Link>
         </Grid>
         <Grid item md={4} xs={12}>
-          <img src={dashboards} alt="Dashboard" className="dashboard-image" />
+          <Image height={100} width={100} src={dashboards} alt="Dashboard" className="dashboard-image" />
         </Grid>
       </Grid>
     </div>

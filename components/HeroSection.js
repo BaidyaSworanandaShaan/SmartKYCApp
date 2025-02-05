@@ -6,6 +6,7 @@ import Button from "@mui/material/Button";
 import "./style.scss"; // Import your stylesheet
 import bannerImg from "../assets/images/bannerimg.png"; // Adjust the import path as needed
 import Image from "next/image";
+import Link from "next/link";
 const HeroSection = () => {
   return (
     <div className="banner">
@@ -35,14 +36,12 @@ const HeroSection = () => {
               with complicated paperwork.
             </Typography>
             <Box sx={{ marginTop: 3, display: "flex", gap: "10px" }}>
-              <Button
-                variant="contained"
-                color="primary"
-                href="/signin"
-                className="btn-primary"
-              >
-                Get Started
-              </Button>
+            <Link href="/signin" passHref>
+  <Button variant="contained" color="primary" className="btn-primary">
+    Get Started
+  </Button>
+</Link>
+
               <Button
                 variant="outlined"
                 color="primary"

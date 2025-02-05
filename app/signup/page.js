@@ -13,6 +13,7 @@ import {
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react"; // Import NextAuth hooks
+import Link from "next/link";
 
 const Signup = () => {
   const { data: session, status } = useSession(); // Get authentication status
@@ -107,7 +108,7 @@ const Signup = () => {
         <Grid item xs={6}>
           <Container maxWidth="sm">
             <div className="signup--content">
-              <Typography variant="h4" className="title" gutterBottom>
+              <Typography variant="h4" gutterBottom className="sign-title">
                 Join VerifyNow Today
               </Typography>
               <Typography
@@ -206,17 +207,28 @@ const Signup = () => {
                       Sign Up
                     </Button>
                   </Grid>
+                  <Grid item xs={12} >
+                      <Typography variant="body2">
+                        Already have an account?{" "}
+                        <Link
+                          href="/signin"
+                          style={{ color: "#1976d2", textDecoration: "none" }}
+                        >
+                          Sign In
+                        </Link>
+                      </Typography>
+                    </Grid>
                 </Grid>
               </form>
             </div>
           </Container>
         </Grid>
         <Grid item xs={6} className="signup--banner">
-          <div className="slider-item">
+          {/* <div className="slider-item">
             <h2>What's new?</h2>
             <h3>Pi Network's KYC Verification Deadline</h3>
             <p>Pi Network, a cryptocurrency platform, set a final KYC verification deadline for January 31, 2025, ahead of its planned mainnet launch in March. Users who do not complete the KYC process risk forfeiting most of their Pi holdings, as the platform aims to maintain network integrity and eliminate fraudulent accounts.</p>
-          </div>
+          </div> */}
         </Grid>
       </Grid>
 
