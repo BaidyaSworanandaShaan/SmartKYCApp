@@ -20,7 +20,7 @@
     background-color: $primary-color;
   }
 }
-body{
+body {
   font-family: $font-family;
 }
 .title {
@@ -194,24 +194,22 @@ body{
       box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Optional: Enhance shadow on hover */
     }
   }
-
- 
 }
 
 .signup--banner {
-  background-color: linear-gradient( 0deg, #083fbf 0%, #011a62 100%) !important;
-  .slider-item{
-    h2{
+  background-color: linear-gradient(0deg, #083fbf 0%, #011a62 100%) !important;
+  .slider-item {
+    h2 {
       font-weight: normal;
       text-align: left;
       font-size: 30px;
       margin-bottom: 10px;
     }
-    h3{
+    h3 {
       font-size: 20px;
       margin-bottom: 10px;
     }
-    p{
+    p {
       margin-top: 0px;
       padding: 0px 40px;
       line-height: 25px;
@@ -221,18 +219,18 @@ body{
 }
 
 .signin--banner {
-  .slider-item{
-    h2{
+  .slider-item {
+    h2 {
       font-weight: normal;
       text-align: left;
       font-size: 30px;
       margin-bottom: 10px;
     }
-    h3{
+    h3 {
       font-size: 20px;
       margin-bottom: 10px;
     }
-    p{
+    p {
       margin-top: 0px;
       padding: 0px 40px;
       line-height: 25px;
@@ -266,4 +264,5 @@ body{
 .navbar-buttons {
   display: flex;
   gap: 10px;
+  align-items: end;
 }

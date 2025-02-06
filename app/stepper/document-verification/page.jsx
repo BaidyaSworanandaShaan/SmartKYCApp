@@ -1,3 +1,4 @@
+"use client";
 import StepperHeader from "@/components/StepperHeader";
 import React, { useState } from "react";
 import { useCookies } from "react-cookie";
@@ -10,10 +11,11 @@ import {
   Select,
   InputLabel,
   FormControl,
+  Typography,
 } from "@mui/material";
 
 const DocumentVerification = () => {
-  const [cookies] = useCookies(["extractedInfo"]);
+  const [cookies, setCookies] = useCookies(["extractedInfo"]);
   const [editableInfo, setEditableInfo] = useState(cookies.extractedInfo || {});
 
   if (!cookies.extractedInfo) {
@@ -22,24 +24,56 @@ const DocumentVerification = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setEditableInfo((prevInfo) => ({
-      ...prevInfo,
-      [name]: value,
-    }));
+
+    // Handle the 'dob' field separately since it's a nested object
+    if (name === "year" || name === "month" || name === "day") {
+      setEditableInfo((prevInfo) => {
+        const updatedInfo = {
+          ...prevInfo,
+          dob: {
+            ...prevInfo.dob,
+            [name]: value, // Update the respective field in the dob object
+          },
+        };
+        setCookies("extractedInfo", updatedInfo); // Update cookies after state
+        return updatedInfo;
+      });
+    }
+    // Handle birthPlace and permanentAddress fields separately
+    else if (name === "birthPlace" || name === "permanentAddress") {
+      setEditableInfo((prevInfo) => {
+        const updatedInfo = {
+          ...prevInfo,
+          [name]: {
+            ...prevInfo[name],
+            district: value, // Update the district value
+          },
+        };
+        setCookies("extractedInfo", updatedInfo); // Update cookies after state
+        return updatedInfo;
+      });
+    } else {
+      // Handle other fields
+      setEditableInfo((prevInfo) => {
+        const updatedInfo = {
+          ...prevInfo,
+          [name]: value,
+        };
+        setCookies("extractedInfo", updatedInfo); // Update cookies after state
+        return updatedInfo;
+      });
+    }
   };
 
-  const handleSave = () => {
-    // Handle saving logic here, for example, updating cookies or sending data to backend
-    console.log("Saved Data:", editableInfo);
-  };
+  console.log(cookies.extractedInfo);
 
   return (
     <div>
       <StepperHeader
-        title="Document Verification"
-        subTitle="Verifying your document against your facial recognition data. Please wait while we extract and validate the information using OCR technology."
+        title="Verify Your Citizenship Document"
+        subTitle="Double-check the extracted information for accuracy before proceeding with secure storage."
       />
-      <h3>Extracted Information:</h3>
+      <Typography className="title">Extracted Information:</Typography>
       <Grid container spacing={2}>
         <Grid item xs={12} md={4}>
           <TextField
@@ -111,7 +145,7 @@ const DocumentVerification = () => {
             variant="outlined"
             fullWidth
             name="birthPlace"
-            value={editableInfo.birthPlace || ""}
+            value={editableInfo.birthPlace?.district || ""}
             onChange={handleChange}
           />
         </Grid>
@@ -121,7 +155,7 @@ const DocumentVerification = () => {
             variant="outlined"
             fullWidth
             name="permanentAddress"
-            value={editableInfo.permanentAddress || ""}
+            value={editableInfo.permanentAddress?.district || ""}
             onChange={handleChange}
           />
         </Grid>

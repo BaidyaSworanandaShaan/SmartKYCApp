@@ -5,7 +5,8 @@ import { AppBar, Toolbar, Typography, Button, Container } from "@mui/material";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react"; // Use useSession hook
 import "./style.scss";
-
+import Image from "next/image";
+import LogoImg from "../assets/images/logo/logo-main.png";
 const Navbar = () => {
   const { data: session } = useSession(); // Automatically updates when session changes
 
@@ -14,7 +15,12 @@ const Navbar = () => {
       <Container className="navbar-container">
         <Typography variant="h6" className="navbar-title">
           <Link href="/" style={{ textDecoration: "none" }}>
-            VERIFYNOW
+            <Image
+              src={LogoImg}
+              alt="VERIFYNOW Logo"
+              height={30} // Using number for height in pixels
+              width="auto"
+            />
           </Link>
         </Typography>
 
@@ -23,6 +29,7 @@ const Navbar = () => {
             <>
               <Button
                 color="inherit"
+                className="btn-primary"
                 component={Link}
                 href="/dashboard" // Dashboard route for logged-in users
               >
@@ -37,13 +44,14 @@ const Navbar = () => {
             </>
           ) : (
             <>
-             <Link href="/signin" passHref>
-  <Button color="inherit">Login</Button>
-</Link>
-
-<Link href="/signup" passHref>
-  <Button color="inherit">Sign Up</Button>
-</Link>
+              <Link href="/signup" passHref>
+                <Button className="btn-primary" color="inherit">
+                  Sign Up
+                </Button>
+              </Link>
+              <Link href="/signin" passHref>
+                <Button color="inherit">Login</Button>
+              </Link>
             </>
           )}
         </div>

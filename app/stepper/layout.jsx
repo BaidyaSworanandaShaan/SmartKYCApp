@@ -13,6 +13,9 @@ import FacialRecognition from "./facial-recognition/page";
 import Success from "./sucess/page";
 import "./stepper.scss";
 import DocumentVerification from "./document-verification/page";
+import DocumentStorage from "./document-storage/page";
+import { useCookies } from "react-cookie";
+import axios from "axios";
 const steps = [
   {
     label: "Upload Document",
@@ -26,17 +29,30 @@ const steps = [
   },
   {
     label: "Document Verification",
-    path: "/stepper/facial-recognition",
+    path: "/stepper/document-verification",
     component: <DocumentVerification />,
   },
   {
-    label: "Complete",
-    path: "/stepper/success",
-    component: <Success />,
+    label: "Secure Storage",
+    path: "/stepper/document-storage",
+    component: <DocumentStorage />,
   },
 ];
 
 export default function HorizontalLinearStepper() {
+  const [cookies] = useCookies([
+    "extractedInfo",
+    "croppedFace",
+    "uploadedFiles",
+  ]);
+  console.log(cookies, "cookies");
+  const [extractedInfo] = React.useState(cookies.extractedInfo || {});
+  const [croppedFace] = React.useState(cookies.croppedFace || {});
+  const [uploadedFiles] = React.useState(
+    Array.isArray(cookies.uploadedFiles) ? cookies.uploadedFiles : []
+  );
+
+  console.log(uploadedFiles, "UF");
   const router = useRouter();
   const [activeStep, setActiveStep] = React.useState(0);
 
@@ -49,11 +65,62 @@ export default function HorizontalLinearStepper() {
     }
   }, []);
 
+  const saveExtractedData = async () => {
+    // Destructure and organize the data from extractedInfo, croppedFace, and uploadedFiles
+    const {
+      citizenshipNumber,
+      fullName,
+      sex,
+      dob,
+      birthPlace,
+      permanentAddress,
+      wardNumber,
+    } = extractedInfo;
+    const frontImg = uploadedFiles[0]; // Assuming the first file is the front image
+    const backImg = uploadedFiles[1]; // Assuming the second file is the back image
+    const userImg = croppedFace; // Assuming the cropped face is the user image
+
+    // Prepare the data to send to the server in the required format
+    const updatedData = {
+      userId: session.user.id, // You can pass a real userId from your app state or context
+      certificateNumber: citizenshipNumber,
+      fullName,
+      gender: sex, // Mapping 'sex' to 'gender' as expected by your backend
+      dob: `${dob.year}-${dob.month}-${dob.day}`, // Format the date appropriately
+      birthplace: birthPlace.district, // Extract birthPlace from the nested object
+      permanentAddress: permanentAddress.district, // Extract permanentAddress from the nested object
+      wardNumber,
+      frontImg,
+      backImg,
+      userImg,
+    };
+
+    console.log("Saving extracted data: ", updatedData);
+
+    const options = {
+      path: "/",
+      maxAge: 24 * 60 * 60,
+    };
+
+    try {
+      const response = await axios.post("/api/saveCitizenship", updatedData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      console.log("Data saved successfully:", response.data);
+    } catch (error) {
+      console.error("Error saving extracted data: ", error);
+    }
+  };
   const handleNext = () => {
     if (activeStep < steps.length - 1) {
       const nextStep = activeStep + 1;
       setActiveStep(nextStep);
       router.push(steps[nextStep].path);
+    } else {
+      saveExtractedData();
     }
   };
 
@@ -100,7 +167,6 @@ export default function HorizontalLinearStepper() {
               }}
             >
               <Button
-            
                 color="inherit"
                 disabled={activeStep === 0}
                 onClick={handleBack}
