@@ -37,9 +37,9 @@ const HeroSection = () => {
             </Typography>
             <Box sx={{ marginTop: 3, display: "flex", gap: "10px" }}>
             <Link href="/signin" passHref>
-  <Button variant="contained" color="primary" className="btn-primary">
-    Get Started
-  </Button>
+              <Button variant="contained" color="primary" className="btn-primary">
+                Get Started
+              </Button>
 </Link>
 
               <Button

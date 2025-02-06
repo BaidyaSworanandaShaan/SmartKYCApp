@@ -13,7 +13,7 @@ const SignupBanner = () => {
   return (
     <div className="signup-banner">
       <Grid container spacing={2}>
-        <Grid item md={8} xs={12}>
+        <Grid item md={8} xs={12} data-aos="zoom-in">
           <h2 className="title">Fast, Safe, Verified - That’s VerifyNow.</h2>
           <p className="desc">
             Create an account and access cutting-edge tools to secure and

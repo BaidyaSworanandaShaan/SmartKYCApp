@@ -1,6 +1,6 @@
 import React from "react";
 import Grid from "@mui/material/Grid";
-
+import 'animate.css';
 import "./style.scss"; // Adjust the import path based on your styles
 
 import { Edit, Car, Money, Calendar } from "iconsax-react"; // Import icons or add new ones as needed
@@ -47,7 +47,7 @@ const Features = ({ title = "", subTitle = "" }) => {
       <Grid container spacing={3}>
         {features.map((service) => (
           <Grid item xs={3} key={service.id}>
-            <div className="content">
+            <div className="content" data-aos="fade-left">
               <div className="icon-circle-bg">{service.icon}</div>
               <div className="desc">
                 <h3 className="desc-title">{service.title}</h3>

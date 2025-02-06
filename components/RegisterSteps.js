@@ -62,7 +62,7 @@ const RegisterSteps = () => {
                 </TimelineDot>
                 <TimelineConnector />
               </TimelineSeparator>
-              <TimelineContent sx={{ py: "12px", px: 2 }}>
+              <TimelineContent sx={{ py: "12px", px: 2 }} data-aos="fade-left">
                 <h3 className="timeline-title">Create an Account</h3>
                 <p className="timeline-content">
                   Sign up with your email and set a secure password. You’ll
@@ -78,7 +78,7 @@ const RegisterSteps = () => {
                 </TimelineDot>
                 <TimelineConnector />
               </TimelineSeparator>
-              <TimelineContent sx={{ py: "12px", px: 2 }}>
+              <TimelineContent sx={{ py: "12px", px: 2 }} data-aos="fade-right">
                 <h3 className="timeline-title">
                   Upload Your Identity Document
                 </h3>
@@ -96,7 +96,7 @@ const RegisterSteps = () => {
                 </TimelineDot>
                 <TimelineConnector />
               </TimelineSeparator>
-              <TimelineContent sx={{ py: "12px", px: 2 }}>
+              <TimelineContent sx={{ py: "12px", px: 2 }} data-aos="fade-left">
                 <h3 className="timeline-title">Real-Time Verification</h3>
                 <p className="timeline-content">
                   Complete the process by allowing facial recognition.This
