@@ -12,6 +12,7 @@ import {
   Alert,
 } from "@mui/material";
 import Image from "next/image";
+import StepperHeader from "@/components/StepperHeader";
 
 const FacialRecognition = () => {
   const [cookies, setCookie] = useCookies(["uploadedFiles", "extractedInfo"]);
@@ -21,7 +22,7 @@ const FacialRecognition = () => {
   const [webcamStream, setWebcamStream] = useState(null);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
-
+  const [compareFaceBtn, setCompareFaceBtn] = useState(false);
   // Load the face-api.js models
   useEffect(() => {
     const loadModels = async () => {
@@ -50,6 +51,7 @@ const FacialRecognition = () => {
       console.error("Error accessing webcam:", error);
       alert("Unable to access the webcam. Please check permissions.");
     }
+    setCompareFaceBtn(true);
   };
 
   // Handle face comparison
@@ -128,53 +130,45 @@ const FacialRecognition = () => {
 
       console.log("Cleaned Text:", cleanText);
 
-      // Regex patterns to extract data
       const patterns = {
         citizenshipNumber: /\b\d{2}-\d{2}-\d{2}-\d{5}\b/,
         fullName:
-          /Full\s*Name\s*[:\.\s]*([A-Z\s]+)(?=\s*(Date\s*of\s*Birth|$))/i, // Full Name
-
-        wardNumber: /Ward\s*Ne\.?\s*[:\s]*(\d{1,2})/i,
+          /Full\s*Name\s*[:\.\s]*([A-Za-z\s]+)(?=\s*Date\s*of\s*Birth)/i,
         sex: /Sex:\s*(Male|Female)/,
         dobYear: /Year:\s*(\d{4})/,
-        dobMonth: /Month:\s*(\w{3})/,
+        dobMonth: /Month:\s*([A-Za-z]+)/,
         dobDay: /Day:\s*(\d{1,2})/,
-        birthPlace: /Birth Place:\s*District:\s*([A-Za-z\s]+)/,
-        permanentAddress: /Permanent Address:\s*District:\s*([A-Za-z\s]+)/,
+        birthPlaceDistrict:
+          /Birth\s*Place\s*[:\s]*District\s*[:\s]*([\w\s]+)(?=\s*(Municipality|Metropolitan)|$)/i,
+        permanentDistrict:
+          /Permanent\s*Address\s*[:\s]*District\s*[:\s]*([\w\s]+)(?=\s*(Municipality|Metropolitan)|$)/i,
+        wardNumber: /Ward\s*(?:No\.?|Ne\.?)\s*[:\s]*(\d{1,2})/i,
       };
 
-      // Extracting data using regex
+      // Extracting Data
       const extractedInfo = {
-        citizenshipNumber: cleanText.match(patterns.citizenshipNumber)
-          ? cleanText.match(patterns.citizenshipNumber)[0]
-          : "Not Available",
-        fullName: cleanText.match(patterns.fullName)
-          ? cleanText.match(patterns.fullName)[1]
-          : "Not Available",
-        sex: cleanText.match(patterns.sex)
-          ? cleanText.match(patterns.sex)[1]
-          : "Not Available",
+        citizenshipNumber:
+          cleanText.match(patterns.citizenshipNumber)?.[0] || "Not Available",
+        fullName: cleanText.match(patterns.fullName)?.[1] || "Not Available",
+        sex: cleanText.match(patterns.sex)?.[1] || "Not Available",
         dob: {
-          year: cleanText.match(patterns.dobYear)
-            ? cleanText.match(patterns.dobYear)[1]
-            : "Not Available",
-          month: cleanText.match(patterns.dobMonth)
-            ? cleanText.match(patterns.dobMonth)[1]
-            : "Not Available",
-          day: cleanText.match(patterns.dobDay)
-            ? cleanText.match(patterns.dobDay)[1]
-            : "Not Available",
+          year: cleanText.match(patterns.dobYear)?.[1] || "Not Available",
+          month: cleanText.match(patterns.dobMonth)?.[1] || "Not Available",
+          day: cleanText.match(patterns.dobDay)?.[1] || "Not Available",
         },
-        wardNumber: cleanText.match(patterns.wardNumber)
-          ? cleanText.match(patterns.wardNumber)[1]
-          : "Not Available",
-        birthPlace: cleanText.match(patterns.birthPlace)
-          ? cleanText.match(patterns.birthPlace)[1]
-          : "Not Available",
-        permanentAddress: cleanText.match(patterns.permanentAddress)
-          ? cleanText.match(patterns.permanentAddress)[1]
-          : "Not Available",
+        birthPlace: {
+          district:
+            cleanText.match(patterns.birthPlaceDistrict)?.[1] ||
+            "Not Available",
+        },
+        permanentAddress: {
+          district:
+            cleanText.match(patterns.permanentDistrict)?.[1] || "Not Available",
+        },
+        wardNumber:
+          cleanText.match(patterns.wardNumber)?.[1] || "Not Available",
       };
+
       console.log("Extracted Data:", extractedInfo);
 
       setExtractedInfo(extractedInfo);
@@ -187,27 +181,77 @@ const FacialRecognition = () => {
     }
   };
 
+  // Save data
+
+  const saveCitizenshipInfo = async () => {
+    if (!extractedInfo || matchStatus !== "Matched") {
+      alert("Cannot save data. Ensure face is matched and data is extracted.");
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/saveCitizenship", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: 1, // Replace with the actual logged-in user ID
+          certificateNumber: extractedInfo.citizenshipNumber,
+          fullName: extractedInfo.fullName,
+          gender: extractedInfo.sex,
+          dob: `${extractedInfo.dob.year}-${extractedInfo.dob.month}-${extractedInfo.dob.day}`,
+          birthplace: extractedInfo.birthPlace.district,
+          permanentAddress: extractedInfo.permanentAddress.district,
+          wardNumber: extractedInfo.wardNumber,
+          frontImg: cookies.uploadedFiles[0], // Assuming front image is at index 0
+          backImg: cookies.uploadedFiles[1], // Assuming back image is at index 1
+          userImg: "URL_TO_USER_WEBCAM_IMAGE", // Replace this with the actual webcam image
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert("Data saved successfully!");
+        console.log("Saved Data:", result);
+      } else {
+        alert(`Failed to save data: ${result.message}`);
+      }
+    } catch (error) {
+      console.error("Error saving data:", error);
+      alert("An error occurred while saving data.");
+    }
+  };
+
   return (
     <Container maxWidth="md">
       <Box mt={4} sx={{ textAlign: "center" }}>
-        <Typography variant="h4" gutterBottom>
-          Facial Recognition and Document Verification
-        </Typography>
-        <Typography variant="body1" color="textSecondary" mb={4}>
-          Compare your live face with the uploaded document and extract personal
-          information.
-        </Typography>
+        <StepperHeader
+          title="Facial Recognition and Data Extraction"
+          subTitle=" Compare your live face with the uploaded document and extract personal
+          information."
+        />
 
         {cookies.uploadedFiles && cookies.uploadedFiles.length > 0 && (
           <Box mb={4} sx={{ display: "flex", justifyContent: "center" }}>
             <Box sx={{ textAlign: "center" }}>
-              <Typography variant="h6">Uploaded Document</Typography>
+              <Typography variant="h6">Uploaded Documents</Typography>
               <Image
                 src={cookies.uploadedFiles[0]}
-                alt="Uploaded Document"
+                alt="Uploaded Documents"
                 width={200}
                 height={200}
                 style={{
+                  borderRadius: "10px",
+                  boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+                }}
+              />
+              <Image
+                src={cookies.uploadedFiles[1]}
+                alt="Uploaded Documents"
+                width={200}
+                height={200}
+                style={{
+                  marginLeft: "20px",
                   borderRadius: "10px",
                   boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
                 }}
@@ -217,7 +261,15 @@ const FacialRecognition = () => {
         )}
 
         <Box mb={4}>
-          <Button variant="contained" onClick={startWebcam}>
+          <Button
+            onClick={startWebcam}
+            className="btn-primary"
+            variant="contained"
+            color="primary"
+            component="span"
+            fullWidth
+            sx={{ mb: 2 }}
+          >
             Start Webcam
           </Button>
         </Box>
@@ -239,16 +291,20 @@ const FacialRecognition = () => {
           />
         </Box>
 
-        <Box mb={4}>
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={handleFaceComparison}
-            disabled={isProcessing}
-          >
-            {isProcessing ? <CircularProgress size={24} /> : "Compare Face"}
-          </Button>
-        </Box>
+        {compareFaceBtn && (
+          <Box mb={4}>
+            <Button
+              className="btn-primary"
+              variant="contained"
+              color="primary"
+              component="span"
+              onClick={handleFaceComparison}
+              disabled={isProcessing}
+            >
+              {isProcessing ? <CircularProgress size={24} /> : "Compare Face"}
+            </Button>
+          </Box>
+        )}
 
         {matchStatus && (
           <Box mb={4}>
@@ -277,10 +333,14 @@ const FacialRecognition = () => {
                   Date of Birth: {extractedInfo.dob.year}-
                   {extractedInfo.dob.month}-{extractedInfo.dob.day}
                 </Typography>
-                <Typography>Birth Place: {extractedInfo.birthPlace}</Typography>
                 <Typography>
-                  Permanent Address: {extractedInfo.permanentAddress}
+                  Birth Place Address: {extractedInfo.birthPlace.district}
                 </Typography>
+
+                <Typography>
+                  Permanent Address: {extractedInfo.permanentAddress.district}
+                </Typography>
+
                 <Typography>Ward Number: {extractedInfo.wardNumber}</Typography>
               </>
             )}

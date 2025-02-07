@@ -30,17 +30,21 @@ const HeroSection = () => {
               Revolutionize Your KYC Process
             </Typography>
             <Typography variant="h5" className="banner-subtitle">
-              Join VerifyNow and unlock the power of fast, secure identity
-              verification! Our streamlined process allows you to complete your
-              KYC verification in minutes—no more waiting in line or dealing
-              with complicated paperwork.
+              Join VerifyNow and unlock the power of quick and secure citizen
+              data management! Our streamlined process allows you to
+              effortlessly extract and manage citizen information in minutes—no
+              more manual data entry or complicated procedures.
             </Typography>
             <Box sx={{ marginTop: 3, display: "flex", gap: "10px" }}>
-            <Link href="/signin" passHref>
-  <Button variant="contained" color="primary" className="btn-primary">
-    Get Started
-  </Button>
-</Link>
+              <Link href="/signin" passHref>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className="btn-primary"
+                >
+                  Get Started
+                </Button>
+              </Link>
 
               <Button
                 variant="outlined"
