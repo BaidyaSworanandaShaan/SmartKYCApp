@@ -41,7 +41,7 @@ export async function POST(req) {
     // Save encrypted data in the database
     const citizenshipInfo = await prisma.citizenshipInfo.create({
       data: {
-        userId: 25,
+        userId: session.user.userId,
         certificateNumber: encryptedData.certificateNumber,
         fullName: encryptedData.fullName,
         gender: encryptedData.gender,
