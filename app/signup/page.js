@@ -12,16 +12,18 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react"; // Import NextAuth hooks
+import { useSession } from "next-auth/react";
 import Link from "next/link";
-
+import Slider from "react-slick";
+import LogoImg from "../../assets/images/logo/logo-secondary.png";
+import Image from "next/image";
 const Signup = () => {
-  const { data: session, status } = useSession(); // Get authentication status
+  const { data: session, status } = useSession();
   const router = useRouter();
 
   useEffect(() => {
     if (session) {
-      router.push("/dashboard"); // Redirect if user is already logged in
+      router.push("/dashboard");
     }
   }, [session, router]);
 
@@ -45,26 +47,21 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const { name, email, password, confirmPassword } = signUpFields;
     const newErrors = {};
 
-    // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email) newErrors.email = "Email is required.";
     else if (!emailRegex.test(email)) newErrors.email = "Invalid email format.";
 
-    // Name validation
     if (!name) newErrors.name = "Name is required.";
     else if (name.length < 3)
       newErrors.name = "Name must be at least 3 characters long.";
 
-    // Password validation
     if (!password) newErrors.password = "Password is required.";
     else if (password.length < 8)
       newErrors.password = "Password must be at least 8 characters long.";
 
-    // Confirm Password validation
     if (!confirmPassword)
       newErrors.confirmPassword = "Please confirm your password.";
     else if (password !== confirmPassword)
@@ -99,8 +96,18 @@ const Signup = () => {
     }
   };
 
-  // Show loading while checking authentication status
   if (status === "loading") return <p>Loading...</p>;
+
+  const sliderSettings = {
+    arrows: false,
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 3000,
+  };
 
   return (
     <div className="signup">
@@ -198,53 +205,108 @@ const Signup = () => {
                   </Grid>
                   <Grid item xs={12}>
                     <Button
+                      className="btn-primary"
                       variant="contained"
                       color="primary"
-                      className="btn btn-primary"
                       fullWidth
                       type="submit"
                     >
                       Sign Up
                     </Button>
                   </Grid>
-                  <Grid item xs={12} >
-                      <Typography variant="body2">
-                        Already have an account?{" "}
-                        <Link
-                          href="/signin"
-                          style={{ color: "#1976d2", textDecoration: "none" }}
-                        >
-                          Sign In
-                        </Link>
-                      </Typography>
-                    </Grid>
+                  <Grid item xs={12}>
+                    <Typography variant="body2">
+                      Already have an account?{" "}
+                      <Link
+                        href="/signin"
+                        style={{ color: "#1976d2", textDecoration: "none" }}
+                      >
+                        Sign In
+                      </Link>
+                    </Typography>
+                  </Grid>
                 </Grid>
               </form>
             </div>
           </Container>
         </Grid>
+
+        {/* Slider Section */}
         <Grid item xs={6} className="signup--banner">
-          {/* <div className="slider-item">
-            <h2>What's new?</h2>
-            <h3>Pi Network's KYC Verification Deadline</h3>
-            <p>Pi Network, a cryptocurrency platform, set a final KYC verification deadline for January 31, 2025, ahead of its planned mainnet launch in March. Users who do not complete the KYC process risk forfeiting most of their Pi holdings, as the platform aims to maintain network integrity and eliminate fraudulent accounts.</p>
-          </div> */}
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <Image
+              src={LogoImg}
+              alt="VERIFYNOW Logo"
+              height={40}
+              width="auto"
+            />
+          </div>
+          <Slider {...sliderSettings}>
+            <div className="slider-item">
+              <h2>Why Citizenship Verification Matters?</h2>
+              <h3>Ensure Security & Authenticity</h3>
+              <p>
+                Citizenship verification helps confirm your identity, ensuring
+                secure access to services, preventing fraud, and complying with
+                legal regulations. Our system verifies your citizenship status
+                efficiently and accurately.
+              </p>
+            </div>
+            <div className="slider-item">
+              <h2>Seamless OCR-Based Verification</h2>
+              <h3>Instant Document Scanning & Processing</h3>
+              <p>
+                Our advanced OCR technology scans and extracts essential details
+                from your citizenship documents, reducing manual errors and
+                speeding up the verification process within seconds.
+              </p>
+            </div>
+            <div className="slider-item">
+              <h2>Secure Digital Storage</h2>
+              <h3>Access Your Documents Anytime</h3>
+              <p>
+                Store your verified citizenship documents securely in our
+                encrypted digital vault. Retrieve them instantly whenever
+                needed, eliminating the hassle of carrying physical copies.
+              </p>
+            </div>
+            <div className="slider-item">
+              <h2>Cross-Platform Accessibility</h2>
+              <h3>Use Your Verified Identity Anywhere</h3>
+              <p>
+                Once verified, your citizenship credentials can be used across
+                multiple platforms, saving time and eliminating the need for
+                repeated verification on different services.
+              </p>
+            </div>
+            <div className="slider-item">
+              <h2>Privacy & Data Protection</h2>
+              <h3>End-to-End Encryption for Your Security</h3>
+              <p>
+                Your personal data is protected with industry-leading encryption
+                standards, ensuring that your information remains confidential,
+                secure, and accessible only to authorized entities.
+              </p>
+            </div>
+            <div className="slider-item">
+              <h2>24/7 Assistance</h2>
+              <h3>Need Help? Our Team is Here for You</h3>
+              <p>
+                Our dedicated support team is available round the clock to
+                assist you with any issues related to citizenship verification,
+                document storage, and secure access.
+              </p>
+            </div>
+          </Slider>
         </Grid>
       </Grid>
 
-      {/* Snackbar for Success/Error Messages */}
       <Snackbar
         open={snackbar.open}
         autoHideDuration={4000}
         onClose={handleCloseSnackbar}
       >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity={snackbar.severity}
-          sx={{ width: "100%" }}
-        >
-          {snackbar.message}
-        </Alert>
+        <Alert severity={snackbar.severity}>{snackbar.message}</Alert>
       </Snackbar>
     </div>
   );

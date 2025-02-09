@@ -8,6 +8,7 @@ const prisma = new PrismaClient();
 
 export async function POST(req) {
   const session = await getServerSession(authOptions);
+  console.log(session);
   try {
     const body = await req.json();
 
@@ -41,7 +42,7 @@ export async function POST(req) {
     // Save encrypted data in the database
     const citizenshipInfo = await prisma.citizenshipInfo.create({
       data: {
-        userId: session.user.userId,
+        userId: 27,
         certificateNumber: encryptedData.certificateNumber,
         fullName: encryptedData.fullName,
         gender: encryptedData.gender,

@@ -4,6 +4,7 @@
 
 .signin {
   overflow-y: hidden;
+
   &--content {
     display: flex;
     flex-direction: column;
@@ -15,7 +16,7 @@
     }
   }
   &--banner {
-    background: linear-gradient( 0deg, #2e2c98 0%, #011a62 100%);
+    background: linear-gradient(0deg, #2e2c98 0%, #011a62 100%);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -27,13 +28,19 @@
       font-size: 1rem;
     }
     .slider-item {
-      display: flex;
-      flex-direction: column; /* Arrange image and text in a column */
-      align-items: center;
+      h2 {
+        opacity: 0.8;
+        font-size: 25px;
+        text-align: center;
+        margin-top: 50px;
+      }
+      h3 {
+        font-size: 20px;
+      }
       color: $background-color;
-      .slider-image {
-        max-width: 100%;
-        height: auto;
+      text-align: center;
+      p {
+        line-height: 1.7;
       }
     }
   }
