@@ -13,7 +13,9 @@ import {
 import { signIn, useSession } from "next-auth/react"; // Import NextAuth hooks
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-
+import Slider from "react-slick";
+import LogoImg from "../../assets/images/logo/logo-secondary.png";
+import Image from "next/image";
 const SignIn = () => {
   const { data: session } = useSession(); // Get authentication status
   const router = useRouter();
@@ -79,6 +81,16 @@ const SignIn = () => {
         severity: "error",
       });
     }
+  };
+  const sliderSettings = {
+    arrows: false,
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 3000,
   };
 
   return (
@@ -162,7 +174,7 @@ const SignIn = () => {
                         Sign In
                       </Button>
                     </Grid>
-                    <Grid item xs={12} >
+                    <Grid item xs={12}>
                       <Typography variant="body2">
                         Don't have an account?{" "}
                         <Link
@@ -181,12 +193,73 @@ const SignIn = () => {
         </Grid>
 
         {/* Banner Section */}
-        <Grid item xs={6} className="signin--banner">
-          {/* <div className="slider-item">
-            <h2>What's new?</h2>
-            <h3>Pi Network's KYC Verification Deadline</h3>
-            <p>Pi Network, a cryptocurrency platform, set a final KYC verification deadline for January 31, 2025, ahead of its planned mainnet launch in March. Users who do not complete the KYC process risk forfeiting most of their Pi holdings, as the platform aims to maintain network integrity and eliminate fraudulent accounts.</p>
-          </div> */}
+        {/* Slider Section */}
+        <Grid item xs={6} className="signup--banner">
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <Image
+              src={LogoImg}
+              alt="VERIFYNOW Logo"
+              height={40}
+              width="auto"
+            />
+          </div>
+          <Slider {...sliderSettings}>
+            <div className="slider-item">
+              <h2>Why Citizenship Verification Matters?</h2>
+              <h3>Ensure Security & Authenticity</h3>
+              <p>
+                Citizenship verification helps confirm your identity, ensuring
+                secure access to services, preventing fraud, and complying with
+                legal regulations. Our system verifies your citizenship status
+                efficiently and accurately.
+              </p>
+            </div>
+            <div className="slider-item">
+              <h2>Seamless OCR-Based Verification</h2>
+              <h3>Instant Document Scanning & Processing</h3>
+              <p>
+                Our advanced OCR technology scans and extracts essential details
+                from your citizenship documents, reducing manual errors and
+                speeding up the verification process within seconds.
+              </p>
+            </div>
+            <div className="slider-item">
+              <h2>Secure Digital Storage</h2>
+              <h3>Access Your Documents Anytime</h3>
+              <p>
+                Store your verified citizenship documents securely in our
+                encrypted digital vault. Retrieve them instantly whenever
+                needed, eliminating the hassle of carrying physical copies.
+              </p>
+            </div>
+            <div className="slider-item">
+              <h2>Cross-Platform Accessibility</h2>
+              <h3>Use Your Verified Identity Anywhere</h3>
+              <p>
+                Once verified, your citizenship credentials can be used across
+                multiple platforms, saving time and eliminating the need for
+                repeated verification on different services.
+              </p>
+            </div>
+            <div className="slider-item">
+              <h2>Privacy & Data Protection</h2>
+              <h3>End-to-End Encryption for Your Security</h3>
+              <p>
+                Your personal data is protected with industry-leading encryption
+                standards, ensuring that your information remains confidential,
+                secure, and accessible only to authorized entities.
+              </p>
+            </div>
+            <div className="slider-item">
+              <h2>24/7 Assistance</h2>
+              <h3>Need Help? Our Team is Here for You</h3>
+              <p>
+                Our dedicated support team is available round the clock to
+                assist you with any issues related to citizenship verification,
+                document storage, and secure access.
+              </p>
+            </div>
+          </Slider>
         </Grid>
       </Grid>
 

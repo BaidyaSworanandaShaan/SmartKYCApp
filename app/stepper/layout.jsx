@@ -82,7 +82,7 @@ export default function HorizontalLinearStepper() {
 
     // Prepare the data to send to the server in the required format
     const updatedData = {
-      userId: session.user.id, // You can pass a real userId from your app state or context
+      userId: 27, // You can pass a real userId from your app state or context
       certificateNumber: citizenshipNumber,
       fullName,
       gender: sex, // Mapping 'sex' to 'gender' as expected by your backend
