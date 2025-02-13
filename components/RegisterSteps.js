@@ -83,8 +83,7 @@ const RegisterSteps = () => {
                   Upload Your Identity Document
                 </h3>
                 <p className="timeline-content">
-                  Choose a valid identity document (e.g., passport, citizenship
-                  card) and upload a clear image.
+                  Choose a valid citizenship document and upload a clear image.
                 </p>
               </TimelineContent>
             </TimelineItem>

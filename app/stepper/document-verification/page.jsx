@@ -1,6 +1,6 @@
 "use client";
 import StepperHeader from "@/components/StepperHeader";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useCookies } from "react-cookie";
 import {
   TextField,
@@ -18,6 +18,11 @@ const DocumentVerification = () => {
   const [cookies, setCookies] = useCookies(["extractedInfo"]);
   const [editableInfo, setEditableInfo] = useState(cookies.extractedInfo || {});
 
+  // Log updated cookies whenever they change
+  useEffect(() => {
+    console.log("Updated Cookies:", cookies.extractedInfo);
+  }, [cookies.extractedInfo]);
+
   if (!cookies.extractedInfo) {
     return <div>No extracted info found.</div>;
   }
@@ -25,47 +30,40 @@ const DocumentVerification = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // Handle the 'dob' field separately since it's a nested object
-    if (name === "year" || name === "month" || name === "day") {
-      setEditableInfo((prevInfo) => {
-        const updatedInfo = {
+    setEditableInfo((prevInfo) => {
+      let updatedInfo;
+
+      // Handle the 'dob' field separately since it's a nested object
+      if (["year", "month", "day"].includes(name)) {
+        updatedInfo = {
           ...prevInfo,
           dob: {
             ...prevInfo.dob,
-            [name]: value, // Update the respective field in the dob object
+            [name]: value,
           },
         };
-        setCookies("extractedInfo", updatedInfo); // Update cookies after state
-        return updatedInfo;
-      });
-    }
-    // Handle birthPlace and permanentAddress fields separately
-    else if (name === "birthPlace" || name === "permanentAddress") {
-      setEditableInfo((prevInfo) => {
-        const updatedInfo = {
+      }
+      // Handle nested objects for birthPlace and permanentAddress
+      else if (name === "birthPlace" || name === "permanentAddress") {
+        updatedInfo = {
           ...prevInfo,
           [name]: {
             ...prevInfo[name],
-            district: value, // Update the district value
+            district: value,
           },
         };
-        setCookies("extractedInfo", updatedInfo); // Update cookies after state
-        return updatedInfo;
-      });
-    } else {
-      // Handle other fields
-      setEditableInfo((prevInfo) => {
-        const updatedInfo = {
+      } else {
+        updatedInfo = {
           ...prevInfo,
           [name]: value,
         };
-        setCookies("extractedInfo", updatedInfo); // Update cookies after state
-        return updatedInfo;
-      });
-    }
-  };
+      }
 
-  console.log(cookies.extractedInfo);
+      console.log("Updated State Before Setting Cookies:", updatedInfo);
+      setCookies("extractedInfo", updatedInfo, { path: "/" }); // Ensure cookie updates persist
+      return updatedInfo;
+    });
+  };
 
   return (
     <div>
@@ -100,7 +98,7 @@ const DocumentVerification = () => {
             <InputLabel>Gender</InputLabel>
             <Select
               label="Gender"
-              name="gender"
+              name="sex"
               value={editableInfo.sex || ""}
               onChange={handleChange}
             >
@@ -171,7 +169,11 @@ const DocumentVerification = () => {
         </Grid>
       </Grid>
       {/* <Box sx={{ mt: 2 }}>
-        <Button variant="contained" color="primary" onClick={handleSave}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => console.log("Final Data Saved:", editableInfo)}
+        >
           Save
         </Button>
       </Box> */}

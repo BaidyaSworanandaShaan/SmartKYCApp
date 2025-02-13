@@ -16,7 +16,7 @@ export const features = [
   {
     id: 2,
     title: "Advanced Security",
-    description: "Keep data safe with industry-leading PKI encryption",
+    description: "Keep data safe with industry-leading AES encryption",
     icon: <Calendar />, // Replace with an appropriate icon
   },
   {

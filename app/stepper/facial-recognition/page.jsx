@@ -60,14 +60,11 @@ const FacialRecognition = () => {
       alert("No document found in cookies!");
       return;
     }
-
     setIsProcessing(true);
     setMatchStatus(null);
     setExtractedInfo(null);
-
     // Load the uploaded document image
     const documentImage = await faceapi.fetchImage(cookies.uploadedFiles[0]);
-
     // Detect the face and landmarks from the uploaded document
     const uploadedFace = await faceapi
       .detectSingleFace(documentImage)
@@ -78,9 +75,7 @@ const FacialRecognition = () => {
       setIsProcessing(false);
       return;
     }
-
     const uploadedFaceDescriptor = uploadedFace.descriptor;
-
     // Start face detection on the webcam feed
     const detectFaceOnWebcam = async () => {
       const webcamFace = await faceapi
@@ -181,46 +176,46 @@ const FacialRecognition = () => {
     }
   };
 
-  // Save data
+  // // Save data
 
-  const saveCitizenshipInfo = async () => {
-    if (!extractedInfo || matchStatus !== "Matched") {
-      alert("Cannot save data. Ensure face is matched and data is extracted.");
-      return;
-    }
+  // const saveCitizenshipInfo = async () => {
+  //   if (!extractedInfo || matchStatus !== "Matched") {
+  //     alert("Cannot save data. Ensure face is matched and data is extracted.");
+  //     return;
+  //   }
 
-    try {
-      const response = await fetch("/api/saveCitizenship", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: 1, // Replace with the actual logged-in user ID
-          certificateNumber: extractedInfo.citizenshipNumber,
-          fullName: extractedInfo.fullName,
-          gender: extractedInfo.sex,
-          dob: `${extractedInfo.dob.year}-${extractedInfo.dob.month}-${extractedInfo.dob.day}`,
-          birthplace: extractedInfo.birthPlace.district,
-          permanentAddress: extractedInfo.permanentAddress.district,
-          wardNumber: extractedInfo.wardNumber,
-          frontImg: cookies.uploadedFiles[0], // Assuming front image is at index 0
-          backImg: cookies.uploadedFiles[1], // Assuming back image is at index 1
-          userImg: "URL_TO_USER_WEBCAM_IMAGE", // Replace this with the actual webcam image
-        }),
-      });
+  //   try {
+  //     const response = await fetch("/api/saveCitizenship", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({
+  //         userId: 1, // Replace with the actual logged-in user ID
+  //         certificateNumber: extractedInfo.citizenshipNumber,
+  //         fullName: extractedInfo.fullName,
+  //         gender: extractedInfo.sex,
+  //         dob: `${extractedInfo.dob.year}-${extractedInfo.dob.month}-${extractedInfo.dob.day}`,
+  //         birthplace: extractedInfo.birthPlace.district,
+  //         permanentAddress: extractedInfo.permanentAddress.district,
+  //         wardNumber: extractedInfo.wardNumber,
+  //         frontImg: cookies.uploadedFiles[0], // Assuming front image is at index 0
+  //         backImg: cookies.uploadedFiles[1], // Assuming back image is at index 1
+  //         userImg: "URL_TO_USER_WEBCAM_IMAGE", // Replace this with the actual webcam image
+  //       }),
+  //     });
 
-      const result = await response.json();
+  //     const result = await response.json();
 
-      if (response.ok) {
-        alert("Data saved successfully!");
-        console.log("Saved Data:", result);
-      } else {
-        alert(`Failed to save data: ${result.message}`);
-      }
-    } catch (error) {
-      console.error("Error saving data:", error);
-      alert("An error occurred while saving data.");
-    }
-  };
+  //     if (response.ok) {
+  //       alert("Data saved successfully!");
+  //       console.log("Saved Data:", result);
+  //     } else {
+  //       alert(`Failed to save data: ${result.message}`);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error saving data:", error);
+  //     alert("An error occurred while saving data.");
+  //   }
+  // };
 
   return (
     <Container maxWidth="md">
