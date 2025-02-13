@@ -21,7 +21,7 @@ model User {
 
 model CitizenshipInfo {
   id               Int    @id @default(autoincrement())
-  userId           Int    @unique   // Foreign Key linking to User.id
+  userId           Int    @unique   
   
   user             User   @relation(fields: [userId], references: [id])
 

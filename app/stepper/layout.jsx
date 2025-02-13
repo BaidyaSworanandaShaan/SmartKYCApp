@@ -10,12 +10,14 @@ import Typography from "@mui/material/Typography";
 import { Container } from "@mui/material";
 import UploadDocument from "./upload-document/page";
 import FacialRecognition from "./facial-recognition/page";
-import Success from "./sucess/page";
-import "./stepper.scss";
 import DocumentVerification from "./document-verification/page";
 import DocumentStorage from "./document-storage/page";
+import Success from "./sucess/page";
+import "./stepper.scss";
 import { useCookies } from "react-cookie";
 import axios from "axios";
+
+// Step definitions
 const steps = [
   {
     label: "Upload Document",
@@ -40,23 +42,21 @@ const steps = [
 ];
 
 export default function HorizontalLinearStepper() {
-  const [cookies] = useCookies([
+  const router = useRouter();
+  const [cookies, setCookie, removeCookie] = useCookies([
     "extractedInfo",
     "croppedFace",
     "uploadedFiles",
   ]);
-  console.log(cookies, "cookies");
-  const [extractedInfo] = React.useState(cookies.extractedInfo || {});
-  const [croppedFace] = React.useState(cookies.croppedFace || {});
-  const [uploadedFiles] = React.useState(
-    Array.isArray(cookies.uploadedFiles) ? cookies.uploadedFiles : []
-  );
-
-  console.log(uploadedFiles, "UF");
-  const router = useRouter();
   const [activeStep, setActiveStep] = React.useState(0);
 
-  // Sync activeStep with the current route
+  const extractedInfo = cookies.extractedInfo || {};
+  const croppedFace = cookies.croppedFace || {};
+  const uploadedFiles = Array.isArray(cookies.uploadedFiles)
+    ? cookies.uploadedFiles
+    : [];
+
+  // Sync step with URL
   React.useEffect(() => {
     const currentPath = window.location.pathname;
     const stepIndex = steps.findIndex((step) => step.path === currentPath);
@@ -65,8 +65,10 @@ export default function HorizontalLinearStepper() {
     }
   }, []);
 
+  // Function to save extracted data
   const saveExtractedData = async () => {
-    // Destructure and organize the data from extractedInfo, croppedFace, and uploadedFiles
+    console.log("Extracted Info:", extractedInfo);
+
     const {
       citizenshipNumber,
       fullName,
@@ -76,44 +78,55 @@ export default function HorizontalLinearStepper() {
       permanentAddress,
       wardNumber,
     } = extractedInfo;
-    const frontImg = uploadedFiles[0]; // Assuming the first file is the front image
-    const backImg = uploadedFiles[1]; // Assuming the second file is the back image
-    const userImg = croppedFace; // Assuming the cropped face is the user image
 
-    // Prepare the data to send to the server in the required format
+    const frontImg = uploadedFiles[0] || null;
+    const backImg = uploadedFiles[1] || null;
+    const userImg = croppedFace || null;
+
     const updatedData = {
-      userId: 27, // You can pass a real userId from your app state or context
       certificateNumber: citizenshipNumber,
       fullName,
-      gender: sex, // Mapping 'sex' to 'gender' as expected by your backend
-      dob: `${dob.year}-${dob.month}-${dob.day}`, // Format the date appropriately
-      birthplace: birthPlace.district, // Extract birthPlace from the nested object
-      permanentAddress: permanentAddress.district, // Extract permanentAddress from the nested object
+      gender: sex,
+      dob: dob ? `${dob.year}-${dob.month}-${dob.day}` : null,
+      birthplace: birthPlace?.district || null,
+      permanentAddress: permanentAddress?.district || null,
       wardNumber,
       frontImg,
       backImg,
       userImg,
     };
 
-    console.log("Saving extracted data: ", updatedData);
-
-    const options = {
-      path: "/",
-      maxAge: 24 * 60 * 60,
-    };
+    console.log("Saving data:", updatedData);
 
     try {
       const response = await axios.post("/api/saveCitizenship", updatedData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
       });
 
       console.log("Data saved successfully:", response.data);
+
+      // Remove cookies after successful submission
+      removeCookie("extractedInfo", {
+        path: "/",
+        domain: window.location.hostname,
+      });
+      removeCookie("croppedFace", {
+        path: "/",
+        domain: window.location.hostname,
+      });
+      removeCookie("uploadedFiles", {
+        path: "/",
+        domain: window.location.hostname,
+      });
+
+      // Navigate to success page
+      router.push("/dashboard");
     } catch (error) {
-      console.error("Error saving extracted data: ", error);
+      console.error("Error saving data:", error);
     }
   };
+
+  // Next step handler
   const handleNext = () => {
     if (activeStep < steps.length - 1) {
       const nextStep = activeStep + 1;
@@ -124,6 +137,7 @@ export default function HorizontalLinearStepper() {
     }
   };
 
+  // Back step handler
   const handleBack = () => {
     if (activeStep > 0) {
       const prevStep = activeStep - 1;
@@ -132,9 +146,10 @@ export default function HorizontalLinearStepper() {
     }
   };
 
+  // Reset stepper
   const handleReset = () => {
     setActiveStep(0);
-    router.push(steps[0].path); // Navigate to the first step
+    router.push(steps[0].path);
   };
 
   return (
@@ -147,6 +162,7 @@ export default function HorizontalLinearStepper() {
             </Step>
           ))}
         </Stepper>
+
         {activeStep === steps.length ? (
           <React.Fragment>
             <Typography sx={{ mt: 2, mb: 1 }}>
@@ -156,12 +172,11 @@ export default function HorizontalLinearStepper() {
           </React.Fragment>
         ) : (
           <React.Fragment>
-            <div sx={{ mt: 2, mb: 1 }}>{steps[activeStep].component}</div>
+            <Box sx={{ mt: 2, mb: 1 }}>{steps[activeStep].component}</Box>
             <Box
               sx={{
                 display: "flex",
                 flexDirection: "row",
-                alignItems: "center",
                 pt: 2,
                 justifyContent: "center",
               }}

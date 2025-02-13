@@ -22,6 +22,7 @@ import Navbar from "@/components/Navbar";
 import Link from "next/link";
 import Image from "next/image";
 import axios from "axios";
+import { useCookies } from "react-cookie";
 
 const DashboardClient = ({ session, initialData }) => {
   const [citizenshipData, setCitizenshipData] = useState(initialData);
@@ -32,7 +33,11 @@ const DashboardClient = ({ session, initialData }) => {
     message: "",
     severity: "info",
   });
-
+  const [cookies, setCookie, removeCookie] = useCookies([
+    "extractedInfo",
+    "croppedFace",
+    "uploadedFiles",
+  ]);
   const handleDelete = async () => {
     setLoading(true);
     try {
@@ -42,6 +47,9 @@ const DashboardClient = ({ session, initialData }) => {
         message: response.data.message,
         severity: "success",
       });
+      removeCookie("extractedInfo", { path: "/" });
+      removeCookie("croppedFace", { path: "/" });
+      removeCookie("uploadedFiles", { path: "/" });
       setTimeout(() => window.location.reload(), 2000); // Reload after 2 sec
     } catch (error) {
       console.error(error);
@@ -68,11 +76,17 @@ const DashboardClient = ({ session, initialData }) => {
           <Typography
             variant="h6"
             paragraph
-            sx={{ lineHeight: "1.7", marginBottom: "20px" }}
+            sx={{ lineHeight: "1.7", marginBottom: "20px", textAlign: "" }}
           >
             To enhance your security and streamline your verification process,
-            you'll need to verify your citizen data for Know Your Customer (KYC)
-            purposes. <strong>Let's get started!</strong>
+            we require you to upload your ID document for facial verification.
+            This helps ensure that your identity is securely validated while
+            allowing for faster and more convenient future verifications. Your
+            document will be safely stored and can be used whenever needed,
+            eliminating the hassle of re-uploading it each time. Rest assured,
+            your data is protected and used only for verification purposes.
+            <br /> <br /> Simply upload your ID, follow the quick verification
+            steps, and you’re all set. <strong>Let’s get started! </strong>
           </Typography>
         ) : (
           <div>

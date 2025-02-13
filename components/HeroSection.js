@@ -27,7 +27,7 @@ const HeroSection = () => {
             }}
           >
             <Typography variant="h4" className="banner-title">
-              Revolutionize Your KYC Process
+              Revolutionize Your Document Verification Process
             </Typography>
             <Typography variant="h5" className="banner-subtitle">
               Join VerifyNow and unlock the power of quick and secure citizen

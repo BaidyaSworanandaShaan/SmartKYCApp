@@ -3,13 +3,10 @@ import React from "react";
 import { Button, Grid } from "@mui/material";
 import "./style.scss"; // Adjust the import path based on your styles
 import Link from "next/link";
-import dashboards from "../assets/images/dashboards.png";
+import dashboards from "../assets/images/dashboard-index.png";
 import Image from "next/image";
 
 const SignupBanner = () => {
-  console.log(dashboards,'dddd')
-
-
   return (
     <div className="signup-banner">
       <Grid container spacing={2}>
@@ -24,7 +21,14 @@ const SignupBanner = () => {
           </Link>
         </Grid>
         <Grid item md={4} xs={12}>
-          <Image height={100} width={100} src={dashboards} alt="Dashboard" className="dashboard-image" />
+          <Image
+            height={200}
+            width="auto"
+            src={dashboards}
+            alt="Dashboard"
+            quality={100}
+            className="dashboard-image"
+          />
         </Grid>
       </Grid>
     </div>

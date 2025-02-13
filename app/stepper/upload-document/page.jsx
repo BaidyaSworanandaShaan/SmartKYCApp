@@ -13,7 +13,7 @@ import React, { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import Tesseract from "tesseract.js";
 import * as faceapi from "face-api.js";
-import translate from "google-translate-api-x";
+
 const UploadDocument = () => {
   const [files, setFiles] = useState([]); // Store uploaded file base64
   const [cookies, setCookie] = useCookies([
@@ -84,7 +84,7 @@ const UploadDocument = () => {
 
       if (detections) {
         console.log("Face detected:", detections);
-        const { box } = detections;
+        const { box } = detections; // Get bounding box of the detected face
 
         // Crop the detected face
         const canvas = document.createElement("canvas");
@@ -93,18 +93,18 @@ const UploadDocument = () => {
         canvas.height = box.height;
         ctx.drawImage(
           frontImage,
-          box.x,
-          box.y,
-          box.width,
-          box.height,
+          box.x, // Start X position
+          box.y, // Start Y position
+          box.width, // Width of the cropped area
+          box.height, // Height of the cropped area
           0,
           0,
           box.width,
           box.height
         );
 
-        const croppedFace = canvas.toDataURL();
-        setPhoto(croppedFace);
+        const croppedFace = canvas.toDataURL(); // Convert the cropped image to base64
+        setPhoto(croppedFace); // Set the cropped face as the photo
 
         // Save cropped face to cookies
         setCookie("croppedFace", croppedFace, {
@@ -112,48 +112,28 @@ const UploadDocument = () => {
           maxAge: 3600, // 1 hour
         });
       } else {
-        alert("No face detected in the citizenship card.");
+        alert(
+          "Image can't be found in the citizenship card. No face detected."
+        );
         console.error("Face detection failed.");
         setIsProcessing(false);
         return;
       }
 
-      // Extract text from the first image (front side) in Nepali
-      Tesseract.recognize(files[0], "nep", {
+      // Extract text from the second image (back side)
+      Tesseract.recognize(files[1], "eng", {
         logger: (m) => console.log(m), // Optional logging
       })
-        .then(async ({ data: { text } }) => {
-          console.log("OCR extracted Nepali text:", text);
-          setTextInfo(text);
+        .then(({ data: { text } }) => {
+          console.log("OCR text extracted:", text);
+          setTextInfo(text); // Store extracted text
 
-          // Save extracted Nepali text to cookies
+          // Save extracted text to cookies
           setCookie("extractedText", text, {
             path: "/",
             maxAge: 3600, // 1 hour
           });
-
-          // Send the extracted text to backend for translation
-          try {
-            const response = await fetch("http://localhost:5000/translate", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ text }),
-            });
-
-            const data = await response.json();
-            console.log("Translated English text:", data.translatedText);
-            setTextInfo(data.translatedText); // Update state with translated text
-
-            // Save translated text to cookies
-            setCookie("translatedText", data.translatedText, {
-              path: "/",
-              maxAge: 3600, // 1 hour
-            });
-          } catch (translationError) {
-            console.error("Error translating text:", translationError);
-          }
-
-          setIsProcessing(false);
+          setIsProcessing(false); // Stop processing
         })
         .catch((error) => {
           console.error("Error during OCR:", error);
